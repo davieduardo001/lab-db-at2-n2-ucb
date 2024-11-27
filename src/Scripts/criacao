@@ -1,0 +1,102 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS mydb DEFAULT CHARACTER SET utf8 ;
+USE mydb ;
+
+-- -----------------------------------------------------
+-- Table mydb.Usuario
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS mydb.Usuario (
+  ID_Usuario INT NOT NULL,
+  Nome_Usuario VARCHAR(100) NOT NULL,
+  Data_Nascimento DATETIME NOT NULL,
+  Endereco_Email VARCHAR(50) NOT NULL,
+  Foto_Perfil LONGBLOB NULL,
+  Senha VARCHAR(20) NOT NULL,
+  Num_Seguidores INT NOT NULL,
+  Num_Seguindo INT NOT NULL,
+  PRIMARY KEY (ID_Usuario),
+  UNIQUE INDEX ID_Usuario_UNIQUE (ID_Usuario ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table mydb.Comunidade
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS mydb.Comunidade (
+  ID_Comunidade INT NOT NULL,
+  Nome_Comunidade VARCHAR(60) NOT NULL,
+  Descricao_Comnidade TEXT(650) NOT NULL,
+  Data_Criacao DATETIME NOT NULL,
+  Funcao VARCHAR(45) NOT NULL,
+  PRIMARY KEY (ID_Comunidade),
+  UNIQUE INDEX ID_Comunidade_UNIQUE (ID_Comunidade ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table mydb.Mensagem
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS mydb.Mensagem (
+  ID_Mensagem INT NOT NULL,
+  Conteudo_Mensagem TEXT(650) NOT NULL,
+  Data_Hora_Mensagem DATETIME NOT NULL,
+  PRIMARY KEY (ID_Mensagem),
+  UNIQUE INDEX ID_Mensagem_UNIQUE (ID_Mensagem ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table mydb.Interesse
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS mydb.Interesse (
+  ID_Interesse INT NOT NULL,
+  Nome_Interesse VARCHAR(45) NOT NULL,
+  PRIMARY KEY (ID_Interesse),
+  UNIQUE INDEX ID_Interesse_UNIQUE (ID_Interesse ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table mydb.Postagem
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS mydb.Postagem (
+  ID_Postagem INT NOT NULL,
+  Texto TEXT(650) NOT NULL,
+  Midia LONGBLOB NULL,
+  Data_Hora_Postagem DATETIME NOT NULL,
+  Usuario_ID_Usuario INT NOT NULL,
+  PRIMARY KEY (ID_Postagem, Usuario_ID_Usuario),
+  UNIQUE INDEX ID_Postagem_UNIQUE (ID_Postagem ASC) VISIBLE,
+  INDEX fk_Postagem_Ususario1_idx (Usuario_ID_Usuario ASC) VISIBLE,
+  CONSTRAINT fk_Postagem_Ususario1
+    FOREIGN KEY (Usuario_ID_Usuario)
+    REFERENCES mydb.Usuario (ID_Usuario)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table mydb.Interacao
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS mydb.Interacao (
+  ID_Interacao INT NOT NULL,
+  Tipo_Interacao VARCHAR(45) NOT NULL,
+  Data_Hora_Interacao DATETIME NOT NULL,
+  Postagem_ID_Postagem INT NOT NULL,
+  Postagem_Usuario_ID_Usuario INT NOT NULL,
+  PRIMARY KEY (ID_Interacao, Postagem_ID_Postagem, Postagem_Usuario_ID_Usuario),
+  UNIQUE INDEX ID_Interacao_UNIQUE (ID_Interacao ASC) VISIBLE,
+  INDEX fk_Interacao_Postagem1_idx (Postagem_ID_Postagem ASC, Postagem_Usuario_ID_Usuario ASC) VISIBLE,
+  CONSTRAINT fk_Interacao_Postagem1
+    FOREIGN KEY (Postagem_ID_Postagem , Postagem_Usuario_ID_Usuario)
+    REFERENCES mydb.Postagem (ID_Postagem , Usuario_ID_Usuario)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
